@@ -21,7 +21,7 @@ oc new-build  -D $'FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11
       USER 1001' --name=jenkins-agent-appdev -n 12fb-jenkins
 
 # Create pipeline build config pointing to the ${REPO} with contextDir `openshift-tasks`
-oc new-build ${REPO} --context-dir=openshift-tasks --env=GUID=${GUID}  --env=CLUSTER=${CLUSTER} --env=REPO=${REPO}
+oc new-build ${REPO} --name=tasks-pipeline --context-dir=openshift-tasks --env=GUID=${GUID}  --env=CLUSTER=${CLUSTER} --env=REPO=${REPO}
 
 # Make sure that Jenkins is fully up and running before proceeding!
 while : ; do
