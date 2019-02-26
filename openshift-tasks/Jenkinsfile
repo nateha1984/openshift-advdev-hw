@@ -95,6 +95,33 @@ podTemplate(
       stage('Deploy to Dev') {
         echo "Deploying container image to Development Project"
 
+        script {
+          openshift.withCluster() {
+            openshift.withProject("${GUID}-tasks-dev") {
+              openshift.set('image', 'dc/tasks', "tasks=docker-registry.default.svc:5000/${GUID}-tasks-dev/tasks:${devTag}", "--env=VERSION='${devTag} (tasks-dev)'")
+
+              openshift.selector('configmap', 'tasks-config').delete()
+              openshift.create(
+                'configmap', 
+                'tasks-config', 
+                '--from-file=configuration/application-users.properties', 
+                '--from-file=configuration/application-roles.properties'
+                )
+
+              openshift.selector('dc', 'tasks').rollout()
+
+              def dc = openshift.selector('dc', 'tasks').object()
+              def dcVersion = dc.status.latestVersion
+              def rc = openshift.selector('rc', 'tasks-${dcVersion}').object()
+              echo "Waiting for Replication Controller tasks-${dcVersion} to be ready..."
+              while (rc.spec.replicas != rc.status.readyReplicas) { 
+                sleep 5
+                rc = openshift.selector('rc', "tasks-${dcVersion}").object()
+              }
+            }
+          }
+        }
+
         // TBD: Deploy to development Project
         //      Set Image, Set VERSION
         //      Make sure the application is running and ready before proceeding
