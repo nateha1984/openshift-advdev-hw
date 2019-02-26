@@ -50,18 +50,20 @@ podTemplate(
       stage('Run tests and Sonar in parallel') {
       
         steps {
-          'Unit Tests': {
-            echo "Running Unit Tests"
+          parallel (
+            'Unit Tests': {
+              echo "Running Unit Tests"
 
-            // TBD: Execute Unit Tests
-            sh "${mvnCmd} test"
-          },
-          'Code Analysis': {
-            echo "Running Code Analysis"
+              // TBD: Execute Unit Tests
+              sh "${mvnCmd} test"
+            },
+            'Code Analysis': {
+              echo "Running Code Analysis"
 
-            // TBD: Execute Sonarqube Tests
-            sh "${mvnCmd} verify sonar:sonar -Dsonar.host.url=http://sonarqube.gpte-hw-cicd.svc.cluster.local:9000"
-          }
+              // TBD: Execute Sonarqube Tests
+              sh "${mvnCmd} verify sonar:sonar -Dsonar.host.url=http://sonarqube.gpte-hw-cicd.svc.cluster.local:9000"
+            }
+          )
         }
       }
 
