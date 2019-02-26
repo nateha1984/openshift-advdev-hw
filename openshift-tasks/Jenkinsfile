@@ -54,7 +54,7 @@ podTemplate(
 
             // TBD: Execute Unit Tests
             sh "${mvnCmd} test"
-          },
+          }
           stage('Code Analysis') {
             echo "Running Code Analysis"
 
