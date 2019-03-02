@@ -112,8 +112,7 @@ podTemplate(
 
               def dc = openshift.selector('dc', 'tasks').object()
               def dcVersion = dc.status.latestVersion
-              echo "DC status: ${dc.status}"
-              def rc = openshift.selector('rc', 'tasks-${dcVersion}').object()
+              def rc = openshift.selector('rc', "tasks-${dcVersion}").object()
               echo "Waiting for Replication Controller tasks-${dcVersion} to be ready..."
               while (rc.spec.replicas != rc.status.readyReplicas) { 
                 sleep 5
@@ -181,13 +180,13 @@ podTemplate(
               openshift.selector("dc", "${destApp}").rollout().latest();
 
               // Wait for application to be deployed
-              def dc_prod = openshift.selector("dc", "${destApp}").object()
-              def dc_version = dc_prod.status.latestVersion
-              def rc_prod = openshift.selector("rc", "${destApp}-${dc_version}").object()
+              def dcProd = openshift.selector("dc", "${destApp}").object()
+              def dcVersion = dc_prod.status.latestVersion
+              def rcProd = openshift.selector("rc", "${destApp}-${dcVersion}").object()
               echo "Waiting for ${destApp} to be ready"
-              while (rc_prod.spec.replicas != rc_prod.status.readyReplicas) {
+              while (rProd.spec.replicas != rcProd.status.readyReplicas) {
                 sleep 5
-                rc_prod = openshift.selector("rc", "${destApp}-${dc_version}").object()
+                rc_prod = openshift.selector("rc", "${destApp}-${dcVersion}").object()
               }
             }
           }
