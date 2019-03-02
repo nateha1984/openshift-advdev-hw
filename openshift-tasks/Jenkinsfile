@@ -181,12 +181,12 @@ podTemplate(
 
               // Wait for application to be deployed
               def dcProd = openshift.selector("dc", "${destApp}").object()
-              def dcVersion = dc_prod.status.latestVersion
+              def dcVersion = dcProd.status.latestVersion
               def rcProd = openshift.selector("rc", "${destApp}-${dcVersion}").object()
               echo "Waiting for ${destApp} to be ready"
-              while (rProd.spec.replicas != rcProd.status.readyReplicas) {
+              while (rcProd.spec.replicas != rcProd.status.readyReplicas) {
                 sleep 5
-                rc_prod = openshift.selector("rc", "${destApp}-${dcVersion}").object()
+                rcProd = openshift.selector("rc", "${destApp}-${dcVersion}").object()
               }
             }
           }
